@@ -270,7 +270,8 @@ function helpCommand(msg) {
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n" +
         "\nPlease report any issues to ElDynamite#4773"
-    )
+    );
+    sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM.`);
 }
 
 

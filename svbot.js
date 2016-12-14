@@ -64,7 +64,7 @@ bot.on('ready', () => {
         return x.name;
     })}`);
 
-    //bot.user.setAvatar('icons/icon.png');
+    // bot.user.setAvatar('icons/icon.png');
 });
 
 bot.on("guildMemberAdd", (member) => {
@@ -188,7 +188,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else if (cardNames.length > 1 && cardNames.length <= 32) {
         sendMessage(
             msg.channel,
-            "Several cards found! " +
+            "I found all of these cards for you: " +
             cardNames.map(function (cardName) {
                 return cardData[cardName].name;
             }).join(", ")
@@ -201,7 +201,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else {
         sendMessage(
             msg.channel,
-            "No cards found :("
+            "I can't find that card."
         );
     }
 }

@@ -65,6 +65,7 @@ bot.on('ready', () => {
     })}`);
 
     // bot.user.setAvatar('icons/icon.png');
+    bot.user.setGame("Shadowverse");
 });
 
 bot.on("guildMemberAdd", (member) => {
@@ -254,17 +255,19 @@ function buildCardData(callback) {
 
 function helpCommand(msg) {
     msg.author.sendMessage(
-        "__$name__ _name_\n" +
+        "__!name__ _name_\n" +
         "Finds card(s) with the given name\n" +
-        "\tAlternate forms: $card-name\n" +
-        "\tEvolved search: $evoname\n" +
-        "__$card__ _term1 term2_...\n" +
+        "\tAlternate forms: !card-name\n" +
+        "\tEvolved search: !evoname\n\n" +
+        "__!card__ _term1 term2_...\n" +
         "Finds card(s) that match the given terms\n" +
-        "\tAlternate forms: $search, $card-search, $\n" +
-        "\tEvolved search: $evo, $evocard, $evosearch\n" +
-        "__$clean__\n" +
+        "\tAlternate forms: !search, !card-search, !\n" +
+        "\tEvolved search: !evo, !evocard, !evosearch\n\n" +
+        "__!flair__ _term1 term2_...\n" +
+        "Shows card flair text given any search terms\n\n" +
+        "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
-        "__$reddit__, __$discord__, __$twitch__, __$tourneys__\n" +
+        "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n" +
         "\nPlease report any issues to ElDynamite#4773"
     )

@@ -205,7 +205,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else if (cardNames.length > 32) {
         sendMessage(
             msg.channel,
-            "Found " + cardNames.length + " cards, try again!"
+            "I found " + cardNames.length + " cards. Could you be more specific?"
         );
     } else {
         sendMessage(

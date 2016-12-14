@@ -188,7 +188,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else if (cardNames.length > 1 && cardNames.length <= 32) {
         sendMessage(
             msg.channel,
-            "I found all of these cards for you: " +
+            "I found these cards for you: " +
             cardNames.map(function (cardName) {
                 return cardData[cardName].name;
             }).join(", ")

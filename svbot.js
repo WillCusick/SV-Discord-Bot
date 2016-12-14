@@ -64,7 +64,7 @@ bot.on('ready', () => {
         return x.name;
     })}`);
 
-    //bot.user.setAvatar('icons/alticon.png');
+    //bot.user.setAvatar('icons/icon.png');
 });
 
 bot.on("guildMemberAdd", (member) => {

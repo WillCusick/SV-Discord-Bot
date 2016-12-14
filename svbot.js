@@ -40,6 +40,8 @@ bot.on("message", msg => {
                 linkToTwitch(msg);
             } else if (["tournament", "tournaments", "tourney", "tourneys", "battlefy"].indexOf(command) > -1) {
                 linkToBattlefy(msg);
+            } else if (["steam"].indexOf(command) > -1) {
+                linkToSteam(msg);
             } else if (memeDict.hasOwnProperty(command)) {
                 meme(memeDict[command], msg);
             } else if (command == "clean") {
@@ -294,6 +296,12 @@ function linkToBattlefy(msg) {
     sendMessage(msg.channel,
         "Shadowverse tournaments on Battlefy:\n\thttps://battlefy.com/excelsior-gaming\n" +
         "Shadowverse tournament Discord server:\n\thttps://discord.gg/XggKWNw");
+}
+
+function linkToSteam(msg) {
+    sendMessage(msg.channel,
+    "Shadowverse on Steam:\n\thttp://store.steampowered.com/app/453480/"
+    );
 }
 
 function meme(imgLink, msg) {

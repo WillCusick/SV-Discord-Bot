@@ -45,7 +45,7 @@ bot.on("message", msg => {
             } else if (memeDict.hasOwnProperty(command)) {
                 meme(memeDict[command], msg);
             } else if (command == "clean") {
-                cleanChannel(msg.channel);
+                cleanChannel(msg, msg.channel);
             } else if (command == "help") {
                 helpCommand(msg);
             } else {
@@ -105,7 +105,14 @@ function addMessageToQueue(channel, message) {
     }
 }
 
-function cleanChannel(channel) {
+function cleanChannel(msg, channel) {
+    if (!msg.guild.roles.find("name", "Maids") || !msg.member.roles.has(msg.guild.roles.find("name", "Maids").id)) {
+        sendMessage(
+            channel,
+            `${msg.author.username}, you do not have cleaning rights.`
+        );
+        return;
+    }
     let queue = messgQ[channel.id];
     if (queue) {
         for (var i = 0; i < queue.queue.length; i++) {
@@ -141,9 +148,8 @@ function cardSearchCommand(args, msg, isEvo, displayFunc=sendFormattedCardCombat
         }
     }
     for (var i = 1; i < args.length; i++) {
-        let term = args[i].toLowerCase();
         cardNames = cardNames.filter(function (cardName) {
-            return doesTermMatchCard(term, cardName);
+            return doesTermMatchCard(args[i], cardName);
         });
     }
     outputCards(msg, cardNames, isEvo, displayFunc);
@@ -210,21 +216,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
 }
 
 function doesTermMatchCard(term, cardName) {
-    let card = cardData[cardName];
-    for (var i = 0; i < card.searchableText.length; i++) {
-        if (card.searchableText[i].includes(term)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function splitSearchableText(searchableText) {
-    let re = /([0-9a-z])([A-Z])|([a-z])([0-9])|([0-9])([a-z])/g;
-    searchableText = searchableText.replace(re, '$1$3$5 $2$4$6');
-    return searchableText.split(/[ .,]/).map(function (term) {
-        return term.toLowerCase();
-    });
+    return cardData[cardName].searchableText.includes(term.toLowerCase());
 }
 
 function formatCardData(cards) {
@@ -234,7 +226,7 @@ function formatCardData(cards) {
         }
         card = cards[cardName];
         card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description;
-        card.searchableText = splitSearchableText(card.searchableText);
+        card.searchableText = card.searchableText.toLowerCase();
         cardData[cardName.toLowerCase()] = card;
     }
 }

@@ -188,11 +188,11 @@ function sendFormattedCardCombatInfo(msg, cardName) {
         card.expansion + " -- " + card.rarity + "\n" +
         "**Base**:       " +
         `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.baseData.attack}/${card.baseData.defense}` : "") + "\n\t" +
-        ((card.baseData.description) ? `*${card.baseData.description}*` : "");
+        ((card.baseData.description) ? `*${card.baseData.description.replace(/\n/g, "\n\t")}*` : "");
     if (card.hasEvo) {
         formattedText += "\n**Evolved**:  " +
             `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.evoData.attack}/${card.evoData.defense}` : "") + "\n\t" +
-            ((card.evoData.description) ? `*${card.evoData.description}*\n` : "");
+            ((card.evoData.description) ? `*${card.evoData.description.replace(/\n/g, "\n\t")}*\n` : "");
     }
     /* +
      dataSource.flair + "`\n";*/

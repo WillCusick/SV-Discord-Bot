@@ -24,14 +24,14 @@ bot.on("message", msg => {
             console.log("Executing:", msg.content);
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
-            } else if (["evoname"].indexOf(command) > -1) {
-                cardNameCommand(args, msg, true);
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {
                 cardSearchCommand(args, msg, false);
-            } else if (["evo", "evocard", "evosearch"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, true);
             } else if (["flair"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, true, displayFlair);
+                cardSearchCommand(args, msg, false, displayFlair);
+            } else if (["img"].indexOf(command) > -1) {
+                cardSearchCommand(args, msg, false, displayImg);
+            } else if (["evoimg", "imgevo", "evo"].indexOf(command) > -1) {
+                cardSearchCommand(args, msg, true, displayImg);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
             } else if (["discord", "do"].indexOf(command) > -1) {
@@ -138,7 +138,7 @@ function cardNameCommand(args, msg, isEvo) {
 }
 
 
-function cardSearchCommand(args, msg, isEvo, displayFunc=sendFormattedCardCombatInfo) {
+function cardSearchCommand(args, msg, isEvo, displayFunc = sendFormattedCardCombatInfo) {
     let cardNames = Object.keys(cardData); //card names are stored as lower
     givenSearch = args.slice(1).join(" ").toLowerCase();
     for (var ci = 0; ci < cardNames.length; ci++) {
@@ -155,21 +155,27 @@ function cardSearchCommand(args, msg, isEvo, displayFunc=sendFormattedCardCombat
     outputCards(msg, cardNames, isEvo, displayFunc);
 }
 
+function displayImg(msg, cardName, isEvo) {
+    let card = cardData[cardName];
+    if (!isEvo) {
+        sendMessage(msg.channel, card.baseData.img);
+    } else if (card.hasEvo) {
+        sendMessage(msg.channel, card.evoData.img);
+    } else {
+        sendMessage(msg.channel, "That card does not have an evolution!")
+    }
+
+}
+
 function displayFlair(msg, cardName) {
     let card = cardData[cardName];
     formattedText = `**${card.name}**\n` +
-            `*${card.baseData.flair}*\n\n` +
-            `*${card.evoData.flair}*`;
+        `*${card.baseData.flair}*` +
+        ((card.hasEvo) ? (`\n\n*${card.evoData.flair}*`) : "");
     sendMessage(msg.channel, formattedText);
 }
-function sendFormattedCardCombatInfo(msg, cardName, isEvo) {
+function sendFormattedCardCombatInfo(msg, cardName) {
     let card = cardData[cardName];
-    var dataSource = card.baseData;
-    if (isEvo && card.hasEvo) {
-        dataSource = card.evoData;
-    } else {
-        isEvo = false;
-    }
     var raceVal = "";
     if (card["race"] && card["race"] != "") {
         var racewords = card["race"].split(" ").map(x => {
@@ -177,17 +183,24 @@ function sendFormattedCardCombatInfo(msg, cardName, isEvo) {
         });
         raceVal = ` (${racewords.join(" ")})`;
     }
-    formattedText = `**${card.name}**` + raceVal + ` ${(isEvo) ? "*Evolved*" : ""}\n\t` +
+    formattedText = `**${card.name}**` + `${raceVal}\n\t` +
         card.faction + " " + (card.type || "") + "\n\t" +
         card.expansion + " -- " + card.rarity + "\n" +
-        ((dataSource.description) ? `*${dataSource.description}*\n` : "") + "\n";
+        "**Base**:       " +
+        `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.baseData.attack}/${card.baseData.defense}` : "") + "\n\t" +
+        ((card.baseData.description) ? `*${card.baseData.description}*` : "");
+    if (card.hasEvo) {
+        formattedText += "\n**Evolved**:  " +
+            `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.evoData.attack}/${card.evoData.defense}` : "") + "\n\t" +
+            ((card.evoData.description) ? `*${card.evoData.description}*\n` : "");
+    }
     /* +
      dataSource.flair + "`\n";*/
     /*formattedText += card.manaCost + " mana";
      if (["Unit", "General"].indexOf(card.type) > -1) {
      formattedText += " " + card.attack + "/" + card.health;
      }*/
-    formattedText += dataSource.img;
+    //formattedText += dataSource.img;
     sendMessage(msg.channel, formattedText);
 }
 
@@ -225,7 +238,7 @@ function formatCardData(cards) {
             continue;
         }
         card = cards[cardName];
-        card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description;
+        card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description + `${card.manaCost}pp`;
         card.searchableText = card.searchableText.toLowerCase();
         cardData[cardName.toLowerCase()] = card;
     }
@@ -252,13 +265,14 @@ function helpCommand(msg) {
         "__!name__ _name_\n" +
         "Finds card(s) with the given name\n" +
         "\tAlternate forms: !card-name\n" +
-        "\tEvolved search: !evoname\n\n" +
         "__!card__ _term1 term2_...\n" +
         "Finds card(s) that match the given terms\n" +
         "\tAlternate forms: !search, !card-search, !\n" +
-        "\tEvolved search: !evo, !evocard, !evosearch\n\n" +
         "__!flair__ _term1 term2_...\n" +
-        "Shows card flair text given any search terms\n\n" +
+        "Shows card flair text for the card that matches the terms\n" +
+        "__!img__ _term1 term2_...\n" +
+        "Shows the card image for the card that matches the terms\n" +
+            "\tEvolved search: !evoimg, !imgevo, !evo\n" +
         "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
@@ -292,7 +306,7 @@ function linkToBattlefy(msg) {
 
 function linkToSteam(msg) {
     sendMessage(msg.channel,
-    "Shadowverse on Steam:\n\thttp://store.steampowered.com/app/453480/"
+        "Shadowverse on Steam:\n\thttp://store.steampowered.com/app/453480/"
     );
 }
 

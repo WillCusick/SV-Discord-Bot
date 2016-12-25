@@ -83,12 +83,14 @@ bot.on("disconnected", () => {
 //MESSAGE HANDLING
 
 function checkGuilds(msg) {
+    /*
     let gArray = bot.guilds.array();
     let totalUsers = 0;
     for (var ii=0;ii<gArray.length;ii++) {
         totalUsers += gArray[ii].memberCount;
     }
     sendMessage(msg.channel, `Logged onto ${gArray.length} servers with a total of ${totalUsers} members`);
+    */
 }
 
 function sendMessage(channel, message) {

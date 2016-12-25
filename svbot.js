@@ -48,6 +48,8 @@ bot.on("message", msg => {
                 cleanChannel(msg, msg.channel);
             } else if (command == "help") {
                 helpCommand(msg);
+            } else if (command == "howmanyguilds") {
+                checkGuilds(msg);
             } else {
                 cardSearchCommand(["card-search"].concat(args), msg);
             }
@@ -79,6 +81,15 @@ bot.on("disconnected", () => {
 });
 
 //MESSAGE HANDLING
+
+function checkGuilds(msg) {
+    let gArray = bot.guilds.array();
+    let totalUsers = 0;
+    for (var ii=0;ii<gArray.length;ii++) {
+        totalUsers += gArray[ii].memberCount;
+    }
+    sendMessage(msg.channel, `Logged onto ${gArray.length} servers with a total of ${totalUsers} members`);
+}
 
 function sendMessage(channel, message) {
     channel.sendMessage(message)

@@ -32,6 +32,10 @@ bot.on("message", msg => {
                 cardSearchCommand(args, msg, false, displayImg);
             } else if (["evoimg", "imgevo", "evo"].indexOf(command) > -1) {
                 cardSearchCommand(args, msg, true, displayImg);
+            } else if (["altimg", "imgalt", "alt"].indexOf(command) > -1) {
+                cardSearchCommand(args, msg, false, displayAltImg);
+            } else if (["altevo", "evoalt", "altevoimg"].indexOf(command) > -1) {
+                cardSearchCommand(args, msg, true, displayAltImg);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
             } else if (["discord", "do"].indexOf(command) > -1) {
@@ -119,7 +123,7 @@ function addMessageToQueue(channel, message) {
 }
 
 function cleanChannel(msg, channel) {
-    if (!msg.guild.roles.find("name", "Maids") || !msg.member.roles.has(msg.guild.roles.find("name", "Maids").id)) {
+    if (!msg.member.permissions.hasPermission("MANAGE_MESSAGES")) {
         sendMessage(
             channel,
             `${msg.author.username}, you do not have cleaning rights.`
@@ -177,7 +181,17 @@ function displayImg(msg, cardName, isEvo) {
     } else {
         sendMessage(msg.channel, "That card does not have an evolution!")
     }
+}
 
+function displayAltImg(msg, cardName, isEvo) {
+    let card = cardData[cardName];
+    if (!isEvo && card.baseData.altimg != null) {
+        sendMessage(msg.channel, card.baseData.altimg);
+    } else if (card.hasEvo && card.evoData.altimg != null) {
+        sendMessage(msg.channel, card.evoData.altimg);
+    } else {
+        sendMessage(msg.channel, "That card does not have an alternate image!")
+    }
 }
 
 function displayFlair(msg, cardName) {
@@ -207,13 +221,6 @@ function sendFormattedCardCombatInfo(msg, cardName) {
             `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.evoData.attack}/${card.evoData.defense}` : "") + "\n\t" +
             ((card.evoData.description) ? `*${card.evoData.description.replace(/\n/g, "\n\t")}*\n` : "");
     }
-    /* +
-     dataSource.flair + "`\n";*/
-    /*formattedText += card.manaCost + " mana";
-     if (["Unit", "General"].indexOf(card.type) > -1) {
-     formattedText += " " + card.attack + "/" + card.health;
-     }*/
-    //formattedText += dataSource.img;
     sendMessage(msg.channel, formattedText);
 }
 
@@ -286,6 +293,8 @@ function helpCommand(msg) {
         "__!img__ _term1 term2_...\n" +
         "Shows the card image for the card that matches the terms\n" +
             "\tEvolved search: !evoimg, !imgevo, !evo\n" +
+            "\tAlternate image search: !alt, !altimg, !imgalt\n" +
+            "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
         "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +

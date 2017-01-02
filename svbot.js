@@ -322,8 +322,9 @@ function linkToTwitch(msg) {
 
 function linkToBattlefy(msg) {
     sendMessage(msg.channel,
-        "Shadowverse tournaments on Battlefy:\n\thttps://battlefy.com/excelsior-gaming\n" +
-        "Shadowverse tournament Discord server:\n\thttps://discord.gg/XggKWNw");
+        "Shadowverse tournaments on Battlefy:\n\t\<https://battlefy.com/excelsior-gaming\>\n" +
+        "Shadowverse tournament Discord servers:\n\tNA/EU: https://discord.gg/XggKWNw" +
+        "\n\tSEA: https://discord.gg/79Vh6W3");
 }
 
 function linkToSteam(msg) {

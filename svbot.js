@@ -258,14 +258,14 @@ function formatCardData(cards) {
             continue;
         }
         card = cards[cardName];
-        card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description + `${card.manaCost}pp`;
-        card.searchableText = card.searchableText.toLowerCase();
+        /*card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description + `${card.manaCost}pp`;
+        card.searchableText = card.searchableText.toLowerCase();*/
         cardData[cardName.toLowerCase()] = card;
     }
 }
 
 function buildCardData(callback) {
-    request("http://bagoum.com/svcards.json", function (err, resp, body) {
+    request("http://sv.bagoum.com/cardsFullJSON", function (err, resp, body) {
         if (err) {
             return callback(err);
         }

@@ -219,7 +219,7 @@ function helpCommand(msg) {
             "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
             "__!voice__ _lang type term1 term2_...\n" +
             "Gets a link from usamin.love for a card's voice.\n" +
-            "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, or ALL for type.\n" +
+            "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
         "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +

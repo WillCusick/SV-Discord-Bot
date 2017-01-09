@@ -80,6 +80,8 @@ function getVoice(ENJP, type, cardName) {
         return `http://usamin.love/card/${linkName}/${langPref}evolve.wav`;
     } else if (["death", "die"].indexOf(type) > -1) {
         return `http://usamin.love/card/${linkName}/${langPref}death.wav`;
+    } else if (["effect"].indexOf(type) > -1) {
+        return `http://usamin.love/card/${linkName}/${langPref}effect.wav`;
     }
     return `http://usamin.love/sv.html#${cardName.replace(/ /g, "_")}`;
 }

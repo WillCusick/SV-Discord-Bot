@@ -2,14 +2,15 @@
  * Created by Doge on 12/13/2016.
  */
 var Discord = require("discord.js");
-var request = require("request");
 var fs = require("fs");
+var request = require("request");
+var cards = require('./modules/cards');
+var display = require('./modules/displayFunc');
 
 var bot = new Discord.Client();
 
 var loginToken = process.env.SV_DISCORD_TOKEN;
 var prefix = "!";
-var cardData = {};
 var messgQ = {};
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/ZJxsfBm";
@@ -27,15 +28,17 @@ bot.on("message", msg => {
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {
                 cardSearchCommand(args, msg, false);
             } else if (["flair"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, false, displayFlair);
+                cardSearchCommand(args, msg, false, display.displayFlair);
             } else if (["img"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, false, displayImg);
+                cardSearchCommand(args, msg, false, display.displayImg);
             } else if (["evoimg", "imgevo", "evo"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, true, displayImg);
+                cardSearchCommand(args, msg, true, display.displayImg);
             } else if (["altimg", "imgalt", "alt"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, false, displayAltImg);
+                cardSearchCommand(args, msg, false, display.displayAltImg);
             } else if (["altevo", "evoalt", "altevoimg"].indexOf(command) > -1) {
-                cardSearchCommand(args, msg, true, displayAltImg);
+                cardSearchCommand(args, msg, true, display.displayAltImg);
+            } else if (["voice"].indexOf(command) > -1) {
+                cardSearchCommand(args.slice(2), msg, false, display.getVoice.bind(null, args[1], args[2]));
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
             } else if (["discord", "do"].indexOf(command) > -1) {
@@ -148,15 +151,15 @@ function cleanChannel(msg, channel) {
 
 function cardNameCommand(args, msg, isEvo) {
     let subname = args.slice(1).join(" ").toLowerCase();
-    let cardNames = Object.keys(cardData).filter(function (name) {
+    let cardNames = Object.keys(cards.cardData).filter(function (name) {
         return name.includes(subname);
     });
     outputCards(msg, cardNames, isEvo, sendFormattedCardCombatInfo);
 }
 
 
-function cardSearchCommand(args, msg, isEvo, displayFunc = sendFormattedCardCombatInfo) {
-    let cardNames = Object.keys(cardData); //card names are stored as lower
+function cardSearchCommand(args, msg, isEvo, displayFunc = display.displayCombatInfo) {
+    let cardNames = Object.keys(cards.cardData); //card names are stored as lower
     givenSearch = args.slice(1).join(" ").toLowerCase();
     for (var ci = 0; ci < cardNames.length; ci++) {
         if (cardNames[ci] == givenSearch) {
@@ -166,73 +169,22 @@ function cardSearchCommand(args, msg, isEvo, displayFunc = sendFormattedCardComb
     }
     for (var i = 1; i < args.length; i++) {
         cardNames = cardNames.filter(function (cardName) {
-            return doesTermMatchCard(args[i], cardName);
+            return cards.doesTermMatchCard(args[i], cardName);
         });
     }
     outputCards(msg, cardNames, isEvo, displayFunc);
 }
 
-function displayImg(msg, cardName, isEvo) {
-    let card = cardData[cardName];
-    if (!isEvo) {
-        sendMessage(msg.channel, card.baseData.img);
-    } else if (card.hasEvo) {
-        sendMessage(msg.channel, card.evoData.img);
-    } else {
-        sendMessage(msg.channel, "That card does not have an evolution!")
-    }
-}
-
-function displayAltImg(msg, cardName, isEvo) {
-    let card = cardData[cardName];
-    if (!isEvo && card.baseData.altimg != null) {
-        sendMessage(msg.channel, card.baseData.altimg);
-    } else if (card.hasEvo && card.evoData.altimg != null) {
-        sendMessage(msg.channel, card.evoData.altimg);
-    } else {
-        sendMessage(msg.channel, "That card does not have an alternate image!")
-    }
-}
-
-function displayFlair(msg, cardName) {
-    let card = cardData[cardName];
-    formattedText = `**${card.name}**\n` +
-        `*${card.baseData.flair}*` +
-        ((card.hasEvo) ? (`\n\n*${card.evoData.flair}*`) : "");
-    sendMessage(msg.channel, formattedText);
-}
-function sendFormattedCardCombatInfo(msg, cardName) {
-    let card = cardData[cardName];
-    var raceVal = "";
-    if (card["race"] && card["race"] != "") {
-        var racewords = card["race"].split(" ").map(x => {
-            return x.substring(0, 1).toUpperCase() + x.substring(1).toLowerCase();
-        });
-        raceVal = ` (${racewords.join(" ")})`;
-    }
-    formattedText = `**${card.name}**` + `${raceVal}\n\t` +
-        card.faction + " " + (card.type || "") + "\n\t" +
-        card.expansion + " -- " + card.rarity + "\n" +
-        "**Base**:       " +
-        `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.baseData.attack}/${card.baseData.defense}` : "") + "\n\t" +
-        ((card.baseData.description) ? `*${card.baseData.description.replace(/\n/g, "\n\t")}*` : "");
-    if (card.hasEvo) {
-        formattedText += "\n**Evolved**:  " +
-            `${card.manaCost}pp` + ((card.type == "Follower") ? ` ${card.evoData.attack}/${card.evoData.defense}` : "") + "\n\t" +
-            ((card.evoData.description) ? `*${card.evoData.description.replace(/\n/g, "\n\t")}*\n` : "");
-    }
-    sendMessage(msg.channel, formattedText);
-}
 
 function outputCards(msg, cardNames, isEvo, displayFunc) {
     if (cardNames.length == 1) {
-        displayFunc(msg, cardNames[0], isEvo);
+        sendMessage(msg.channel, displayFunc(cardNames[0], isEvo));
     } else if (cardNames.length > 1 && cardNames.length <= 32) {
         sendMessage(
             msg.channel,
             "I found these cards for you: " +
             cardNames.map(function (cardName) {
-                return cardData[cardName].name;
+                return cards.cardData[cardName].name;
             }).join(", ")
         );
     } else if (cardNames.length > 32) {
@@ -246,36 +198,6 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
             "I can't find that card."
         );
     }
-}
-
-function doesTermMatchCard(term, cardName) {
-    return cardData[cardName].searchableText.includes(term.toLowerCase());
-}
-
-function formatCardData(cards) {
-    for (var cardName in cards) {
-        if (!cards.hasOwnProperty(cardName)) {
-            continue;
-        }
-        card = cards[cardName];
-        /*card.searchableText = card.name + card.faction + card.baseData.description + card.evoData.description + `${card.manaCost}pp`;
-        card.searchableText = card.searchableText.toLowerCase();*/
-        cardData[cardName.toLowerCase()] = card;
-    }
-}
-
-function buildCardData(callback) {
-    request("http://sv.bagoum.com/cardsFullJSON", function (err, resp, body) {
-        if (err) {
-            return callback(err);
-        }
-        if (resp.statusCode != 200) {
-            return callback("Invalid status code: " + resp.statusCode);
-        }
-        var cards = JSON.parse(body);
-        formatCardData(cards);
-        return callback(null);
-    });
 }
 
 //LINK COMMANDS
@@ -295,6 +217,9 @@ function helpCommand(msg) {
             "\tEvolved search: !evoimg, !imgevo, !evo\n" +
             "\tAlternate image search: !alt, !altimg, !imgalt\n" +
             "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
+            "__!voice__ _lang type term1 term2_...\n" +
+            "Gets a link from usamin.love for a card's voice.\n" +
+            "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, or ALL for type.\n" +
         "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
@@ -342,7 +267,7 @@ function meme(imgLink, msg) {
 
 function initializeData(callback) {
     console.log("Starting...");
-    buildCardData(function (err) {
+    cards.buildCardData(function (err) {
         if (err) {
             return callback(err);
         }

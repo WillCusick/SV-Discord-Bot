@@ -6,6 +6,7 @@ var fs = require("fs");
 var request = require("request");
 var cards = require('./modules/cards');
 var display = require('./modules/displayFunc');
+var mongo = require('./modules/mongo');
 
 var bot = new Discord.Client();
 
@@ -14,7 +15,6 @@ var prefix = "!";
 var messgQ = {};
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/ZJxsfBm";
-
 
 bot.on("message", msg => {
     if (msg.content.startsWith(prefix) &&
@@ -51,12 +51,16 @@ bot.on("message", msg => {
                 linkToSteam(msg);
             } else if (memeDict.hasOwnProperty(command)) {
                 meme(memeDict[command], msg);
-            } else if (command == "clean") {
-                cleanChannel(msg, msg.channel);
-            } else if (command == "help") {
+            } else if (["help", "man"].indexOf(command) > -1) {
                 helpCommand(msg);
             } else if (command == "howmanyguilds") {
                 checkGuilds(msg);
+            } else if (msg.member && msg.member.permissions.hasPermission("MANAGE_MESSAGES")) {
+                if (command == "clean") {
+                    cleanChannel(msg, msg.channel);
+                } else if (["welcome"].indexOf(command) > -1) {
+                    mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
+                }
             } else {
                 cardSearchCommand(["card-search"].concat(args), msg);
             }
@@ -80,7 +84,11 @@ bot.on('ready', () => {
 });
 
 bot.on("guildMemberAdd", (member) => {
-    sendMessage(member.guild.defaultChannel, `Welcome, ${member.user.username}!`);
+    mongo.getWelcomeToggle(member.guild.id, function (toggle) {
+        if (toggle) {
+            sendMessage(member.guild.defaultChannel, `Welcome, ${member.user.username}!`);
+        }
+    });
 });
 
 bot.on("disconnected", () => {
@@ -91,13 +99,13 @@ bot.on("disconnected", () => {
 
 function checkGuilds(msg) {
     /*
-    let gArray = bot.guilds.array();
-    let totalUsers = 0;
-    for (var ii=0;ii<gArray.length;ii++) {
-        totalUsers += gArray[ii].memberCount;
-    }
-    sendMessage(msg.channel, `Logged onto ${gArray.length} servers with a total of ${totalUsers} members`);
-    */
+     let gArray = bot.guilds.array();
+     let totalUsers = 0;
+     for (var ii=0;ii<gArray.length;ii++) {
+     totalUsers += gArray[ii].memberCount;
+     }
+     sendMessage(msg.channel, `Logged onto ${gArray.length} servers with a total of ${totalUsers} members`);
+     */
 }
 
 function sendMessage(channel, message) {
@@ -126,13 +134,6 @@ function addMessageToQueue(channel, message) {
 }
 
 function cleanChannel(msg, channel) {
-    if (!msg.member.permissions.hasPermission("MANAGE_MESSAGES")) {
-        sendMessage(
-            channel,
-            `${msg.author.username}, you do not have cleaning rights.`
-        );
-        return;
-    }
     let queue = messgQ[channel.id];
     if (queue) {
         for (var i = 0; i < queue.queue.length; i++) {
@@ -147,6 +148,18 @@ function cleanChannel(msg, channel) {
     );
 }
 
+function showToggled(msg, success, isToggle) {
+    if (!success) {
+        sendMessage(msg.channel, "Failed to set welcome toggle.");
+    } else {
+        if (isToggle) {
+            sendMessage(msg.channel, "Set welcome toggle to ON.");
+        } else {
+            sendMessage(msg.channel, "Set welcome toggle to OFF.");
+        }
+    }
+}
+
 //CARD COMMANDS
 
 function cardNameCommand(args, msg, isEvo) {
@@ -154,7 +167,7 @@ function cardNameCommand(args, msg, isEvo) {
     let cardNames = Object.keys(cards.cardData).filter(function (name) {
         return name.includes(subname);
     });
-    outputCards(msg, cardNames, isEvo, sendFormattedCardCombatInfo);
+    outputCards(msg, cardNames, isEvo, display.displayCombatInfo);
 }
 
 
@@ -214,16 +227,18 @@ function helpCommand(msg) {
         "Shows card flair text for the card that matches the terms\n" +
         "__!img__ _term1 term2_...\n" +
         "Shows the card image for the card that matches the terms\n" +
-            "\tEvolved search: !evoimg, !imgevo, !evo\n" +
-            "\tAlternate image search: !alt, !altimg, !imgalt\n" +
-            "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
-            "__!voice__ _lang type term1 term2_...\n" +
-            "Gets a link from usamin.love for a card's voice.\n" +
-            "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
-        "__!clean__\n" +
-        `Deletes the last ${Q_SIZE} messages by this bot\n\n` +
+        "\tEvolved search: !evoimg, !imgevo, !evo\n" +
+        "\tAlternate image search: !alt, !altimg, !imgalt\n" +
+        "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
+        "__!voice__ _lang type term1 term2_...\n" +
+        "Gets a link from usamin.love for a card's voice.\n" +
+        "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
-        "Returns relevant links to other Shadowverse resources\n" +
+        "Returns relevant links to other Shadowverse resources\n\n" +
+        "__!clean__\n" +
+        `Deletes the last ${Q_SIZE} messages by this bot. Requires mod permissions.\n` +
+        "__!welcome__\n" +
+        `Toggles the welcome message. Add TRUE/FALSE to explicitly toggle. Requires mod permissions.\n` +
         "\nPlease report any issues to ElDynamite#4773"
     );
     sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM.`);

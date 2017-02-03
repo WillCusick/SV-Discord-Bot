@@ -11,6 +11,7 @@ var mongo = require('./modules/mongo');
 var bot = new Discord.Client();
 
 var loginToken = process.env.SV_DISCORD_TOKEN;
+var blacklist = process.env.DISC_BLACKLIST.split(";");
 var prefix = "!";
 var messgQ = {};
 const Q_SIZE = 50;
@@ -74,15 +75,33 @@ bot.on("message", msg => {
     }
 });
 
-var memeDict = {};
+var memeDict = {
+    "sparta":"sv/sparta.jpg"
+};
 
 bot.on('ready', () => {
-    console.log(`Logged on to ${bot.channels.map(x => {
+    console.log(`Logged on to ${bot.guilds.map(x => {
         return x.name;
     })}`);
+    Array.from(bot.guilds.values()).forEach(x => {
+        if (blacklist.indexOf(x.id) > -1) {
+            console.log("Found blacklisted guild on login:", x.name);
+            x.leave();
+        }
+    });
 
     // bot.user.setAvatar('icons/icon.png');
     bot.user.setGame("Shadowverse");
+});
+
+bot.on("guildCreate", (guild) => {
+    console.log("Joined", guild.id);
+    if (blacklist.indexOf(guild.id) > -1) {
+        console.log("Blacklisted guild! Leaving.");
+        guild.leave();
+    } else {
+        sendMessage(guild.defaultChannel, "Shadowverse Bot has successfully joined the server!");
+    }
 });
 
 bot.on("guildMemberAdd", (member) => {

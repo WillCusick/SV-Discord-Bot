@@ -4,6 +4,7 @@
 var Discord = require("discord.js");
 var fs = require("fs");
 var request = require("request");
+var moment = require('moment');
 var cards = require('./modules/cards');
 var display = require('./modules/displayFunc');
 var mongo = require('./modules/mongo');
@@ -17,13 +18,24 @@ var messgQ = {};
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/ZJxsfBm";
 
+
+function logCommand(msg) {
+    let toRet = moment().format("YY-MM-DD--HH-mm-ss") + ":";
+    if (msg.guild) {
+        toRet += msg.guild.name + "; " + msg.author.username;
+    } else {
+        toRet += "PM; " + msg.author.username;
+    }
+    console.log(toRet + "; " + msg.content);
+}
+
 bot.on("message", msg => {
     if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
             let args = msg.content.substring(1).split(" ");
             let command = args[0].toLowerCase();
-            console.log("Executing:", msg.content);
+            logCommand(msg);
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {

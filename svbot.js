@@ -30,12 +30,12 @@ function logCommand(msg) {
 }
 
 bot.on("message", msg => {
-    if (blacklist.indexOf(msg.guild.id) > -1) {
-        console.log("Blocked:", msg.guild.name, ";", msg.content);
-        return;
-    }
     if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
+        if (msg.guild && blacklist.indexOf(msg.guild.id) > -1) {
+            console.log("Blocked:", msg.guild.name, ";", msg.content);
+            return;
+        }
         try {
             let args = msg.content.substring(1).split(" ");
             let command = args[0].toLowerCase();
@@ -100,7 +100,7 @@ bot.on('ready', () => {
         return x.name;
     })}`);
 
-    // bot.user.setAvatar('icons/icon.png');
+    // bot.user.setAvatar('icons/gobu.png');
     bot.user.setGame("Shadowverse");
 });
 

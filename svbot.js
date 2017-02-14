@@ -30,6 +30,10 @@ function logCommand(msg) {
 }
 
 bot.on("message", msg => {
+    if (blacklist.indexOf(msg.guild.id) > -1) {
+        console.log("Blocked:", msg.guild.name, ";", msg.content);
+        return;
+    }
     if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
@@ -95,25 +99,9 @@ bot.on('ready', () => {
     console.log(`Logged on to ${bot.guilds.map(x => {
         return x.name;
     })}`);
-    Array.from(bot.guilds.values()).forEach(x => {
-        if (blacklist.indexOf(x.id) > -1) {
-            console.log("Found blacklisted guild on login:", x.name);
-            x.leave();
-        }
-    });
 
     // bot.user.setAvatar('icons/icon.png');
     bot.user.setGame("Shadowverse");
-});
-
-bot.on("guildCreate", (guild) => {
-    console.log("Joined", guild.id);
-    if (blacklist.indexOf(guild.id) > -1) {
-        console.log("Blacklisted guild! Leaving.");
-        guild.leave();
-    } else {
-        sendMessage(guild.defaultChannel, "Shadowverse Bot has successfully joined the server!");
-    }
 });
 
 bot.on("guildMemberAdd", (member) => {

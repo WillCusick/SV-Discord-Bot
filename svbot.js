@@ -100,14 +100,14 @@ bot.on('ready', () => {
         return x.name;
     })}`);
 
-    // bot.user.setAvatar('icons/gobu.png');
+    bot.user.setAvatar('icons/gobu.jpg');
     bot.user.setGame("Shadowverse");
 });
 
 bot.on("guildMemberAdd", (member) => {
     mongo.getWelcomeToggle(member.guild.id, function (toggle) {
         if (toggle) {
-            sendMessage(member.guild.defaultChannel, `Welcome, ${member.user.username}!`);
+            sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.user.username}!`);
         }
     });
 });
@@ -154,18 +154,18 @@ function cleanChannel(msg, channel) {
     }
     sendMessage(
         channel,
-        "Cleaned messages"
+        "Cleaned messages gobu."
     );
 }
 
 function showToggled(msg, success, isToggle) {
     if (!success) {
-        sendMessage(msg.channel, "Failed to set welcome toggle.");
+        sendMessage(msg.channel, "Couldn't set welcome toggle gobu!");
     } else {
         if (isToggle) {
-            sendMessage(msg.channel, "Set welcome toggle to ON.");
+            sendMessage(msg.channel, "Set welcome toggle to ON gobu.");
         } else {
-            sendMessage(msg.channel, "Set welcome toggle to OFF.");
+            sendMessage(msg.channel, "Set welcome toggle to OFF gobu.");
         }
     }
 }
@@ -205,7 +205,7 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else if (cardNames.length > 1 && cardNames.length <= 32) {
         sendMessage(
             msg.channel,
-            "I found these cards for you: " +
+            "I found these cards gobu: " +
             cardNames.map(function (cardName) {
                 return cards.cardData[cardName].name;
             }).join(", ")
@@ -213,12 +213,12 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     } else if (cardNames.length > 32) {
         sendMessage(
             msg.channel,
-            "I found " + cardNames.length + " cards. Could you be more specific?"
+            "I found " + cardNames.length + " cards. That's too many gobu!"
         );
     } else {
         sendMessage(
             msg.channel,
-            "I can't find that card."
+            "I can't find that card gobu."
         );
     }
 }
@@ -251,7 +251,7 @@ function helpCommand(msg) {
         `Toggles the welcome message. Add TRUE/FALSE to explicitly toggle. Requires mod permissions.\n` +
         "\nPlease report any issues to ElDynamite#4773"
     );
-    sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM.`);
+    sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM gobu.`);
 }
 
 

@@ -4,10 +4,10 @@
 var Discord = require("discord.js");
 var fs = require("fs");
 var request = require("request");
-var moment = require('moment');
 var cards = require('./modules/cards');
 var display = require('./modules/displayFunc');
 var mongo = require('./modules/mongo');
+var log = require('./modules/logging');
 
 var bot = new Discord.Client();
 
@@ -15,31 +15,18 @@ var loginToken = process.env.SV_DISCORD_TOKEN;
 var blacklist = process.env.DISC_BLACKLIST.split(";");
 var prefix = "!";
 var messgQ = {};
+var botUserQ = {};
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/ZJxsfBm";
 
 
-function logCommand(msg) {
-    let toRet = moment().format("YY-MM-DD--HH-mm-ss") + ":";
-    if (msg.guild) {
-        toRet += msg.guild.name + "; " + msg.author.username;
-    } else {
-        toRet += "PM; " + msg.author.username;
-    }
-    console.log(toRet + "; " + msg.content);
-}
-
 bot.on("message", msg => {
     if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
-        if (msg.guild && blacklist.indexOf(msg.guild.id) > -1) {
-            console.log("Blocked:", msg.guild.name, ";", msg.content);
-            return;
-        }
         try {
             let args = msg.content.substring(1).split(" ");
             let command = args[0].toLowerCase();
-            logCommand(msg);
+            log.logCommand(msg);
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {
@@ -84,9 +71,7 @@ bot.on("message", msg => {
                 cardSearchCommand(["card-search"].concat(args), msg);
             }
         } catch (err) {
-            console.log(
-                "Had error processing", msg.content, " error:", err
-            );
+            log.log(`Couldn't process ${msg.content} on ${(msg.guild) ? msg.guild.name : "PM"} by ${msg.author.name}`);
         }
     }
 });
@@ -96,14 +81,33 @@ var memeDict = {
 };
 
 bot.on('ready', () => {
-    console.log(`Logged on to ${bot.guilds.map(x => {
+    log.log(`Logged on to ${bot.guilds.map(x => {
+        x.fetchMember(bot.user).then(botmember => {
+            botUserQ[x.id] = botmember;
+        });
         return x.name;
     })}`);
-
+    Array.from(bot.guilds.values()).forEach(x => {
+        if (blacklist.indexOf(x.id) > -1) {
+            log.log("Found blacklisted guild on login: " + x.name + " " + x.id);
+            x.leave();
+        }
+    });
     bot.user.setAvatar('icons/gobu.jpg');
     bot.user.setGame("Shadowverse");
 });
-
+bot.on("guildCreate", (guild) => {
+    log.log("Joined " +  guild.name + " " + guild.id);
+    if (blacklist.indexOf(guild.id) > -1) {
+        log.log("Blacklisted guild! Leaving.");
+        guild.leave();
+    } else {
+        guild.fetchMember(bot.user).then(botmember => {
+            botUserQ[guild.id] = botmember;
+        });
+        sendMessage(guild.defaultChannel, "Shadowverse Bot has successfully joined the server gobu!", true);
+    }
+});
 bot.on("guildMemberAdd", (member) => {
     mongo.getWelcomeToggle(member.guild.id, function (toggle) {
         if (toggle) {
@@ -118,7 +122,15 @@ bot.on("disconnected", () => {
 
 //MESSAGE HANDLING
 
-function sendMessage(channel, message) {
+function sendMessage(channel, message, overridePermCheck=false) {
+    if (channel instanceof Discord.TextChannel) {
+        let gid = channel.guild.id;
+        if (!overridePermCheck &&
+            (!botUserQ.hasOwnProperty(gid) || !channel.permissionsFor(botUserQ[gid]).hasPermissions(["SEND_MESSAGES"]))) {
+            log.log(`Could not send message. Guild: ${channel.guild.name} Channel: ${channel.name}`);
+            return;
+        }
+    }
     channel.sendMessage(message)
         .then(message => {
             addMessageToQueue(channel, message);
@@ -291,7 +303,7 @@ function meme(imgLink, msg) {
 //INIT
 
 function initializeData(callback) {
-    console.log("Starting...");
+    log.log("Starting...");
     cards.buildCardData(function (err) {
         if (err) {
             return callback(err);

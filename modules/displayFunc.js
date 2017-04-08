@@ -66,26 +66,34 @@ module.exports.displayCombatInfo = displayCombatInfo;
 
 function getVoice(ENJP, type, cardName) {
     let linkName = lowerUnderscoreCondense(cardName);
+    let cid = cards.cardData[cardName].id;
     ENJP = ENJP.toLowerCase();
     type = type.toLowerCase();
-    let langPref = "j_";
+    let langPref = "j";
     if (["en", "eng", "e", "english", "eigo"].indexOf(ENJP) > -1) {
-        langPref = "e_";
+        langPref = "e";
+    } else if (["ko", "kor", "k", "korean"].indexOf(ENJP) > -1) {
+        langPref = "k";
     }
     if (["summon", "play"].indexOf(type) > -1) {
-        return `http://usamin.love/card/${linkName}/${langPref}summon.wav`;
+        return `http://sv.bagoum.com/voice/${langPref}/vo_${cid}_1.mp3`;
     } else if (["attack", "atk"].indexOf(type) > -1) {
-        return `http://usamin.love/card/${linkName}/${langPref}attack.wav`;
+        return `http://sv.bagoum.com/voice/${langPref}/vo_${cid}_2.mp3`;
     } else if (["evo", "evolve"].indexOf(type) > -1) {
-        return `http://usamin.love/card/${linkName}/${langPref}evolve.wav`;
+        return `http://sv.bagoum.com/voice/${langPref}/vo_${cid}_3.mp3`;
     } else if (["death", "die"].indexOf(type) > -1) {
-        return `http://usamin.love/card/${linkName}/${langPref}death.wav`;
+        return `http://sv.bagoum.com/voice/${langPref}/vo_${cid}_4.mp3`;
     } else if (["effect"].indexOf(type) > -1) {
-        return `http://usamin.love/card/${linkName}/${langPref}effect.wav`;
+        return `http://sv.bagoum.com/voice/${langPref}/vo_${cid}_5.mp3`;
     }
-    return `http://usamin.love/sv.html#${cardName.replace(/ /g, "_")}`;
+    return `http://sv.bagoum.com/cards/${cardName.replace(/\W/g, "")}`;
 }
 module.exports.getVoice = getVoice;
+
+function fullCardLink(cardName) {
+    return `Full card art for ${cardName.toUpperCase()}:\n\t<http://sv.bagoum.com/getRawImage/0/0/${cardName.replace(/\W/g, "")}>\nCard info and other arts:\n\t<http://sv.bagoum.com/cards/${cardName.replace(/\W/g,"")}>`
+}
+module.exports.fullCardLink = fullCardLink;
 
 function lowerUnderscoreCondense(str) {
     return str.replace(/ /g, "_").replace(/\W/g, "");

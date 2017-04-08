@@ -43,6 +43,8 @@ bot.on("message", msg => {
                 cardSearchCommand(args, msg, true, display.displayAltImg);
             } else if (["voice"].indexOf(command) > -1) {
                 cardSearchCommand(args.slice(2), msg, false, display.getVoice.bind(null, args[1], args[2]));
+            } else if (["fullart", "full-art", "info"].indexOf(command) > -1) {
+                cardSearchCommand(args, msg, false, display.fullCardLink);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
             } else if (["discord", "do"].indexOf(command) > -1) {
@@ -57,8 +59,6 @@ bot.on("message", msg => {
                 meme(memeDict[command], msg);
             } else if (["help", "man"].indexOf(command) > -1) {
                 helpCommand(msg);
-            } else if (command == "howmanyguilds") {
-                checkGuilds(msg);
             } else if (msg.member && msg.member.permissions.hasPermission("MANAGE_MESSAGES")) {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
@@ -116,7 +116,8 @@ bot.on("guildMemberAdd", (member) => {
     });
 });
 
-bot.on("disconnected", () => {
+bot.on("disconnect", () => {
+    log.log("Bot disconnected!");
     bot.login(loginToken);
 });
 
@@ -255,6 +256,8 @@ function helpCommand(msg) {
         "__!voice__ _lang type term1 term2_...\n" +
         "Gets a link from usamin.love for a card's voice.\n" +
         "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
+        "__!fullart__ _term 1 term2_...\n" +
+        "Links to the full card art and information for the card that matches the terms\n" + 
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n\n" +
         "__!clean__\n" +

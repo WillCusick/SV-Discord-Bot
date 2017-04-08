@@ -15,11 +15,10 @@ module.exports.doesTermMatchCard = doesTermMatchCard;
 
 function formatCardData(cards) {
     for (var cardName in cards) {
-        if (!cards.hasOwnProperty(cardName)) {
-            continue;
+        if (cards.hasOwnProperty(cardName)) {
+            card = cards[cardName];
+            cardData[cardName.toLowerCase()] = card;
         }
-        card = cards[cardName];
-        cardData[cardName.toLowerCase()] = card;
     }
 }
 

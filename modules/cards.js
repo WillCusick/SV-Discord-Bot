@@ -30,7 +30,7 @@ function buildCardData(callback) {
         if (resp.statusCode != 200) {
             return callback("Invalid status code: " + resp.statusCode);
         }
-        var cards = JSON.parse(body);
+        var cards = JSON.parse(body.replace(/\<br\>/g, "\\n"));
         formatCardData(cards);
         return callback(null);
     });

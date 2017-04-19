@@ -45,6 +45,8 @@ bot.on("message", msg => {
                 cardSearchCommand(args.slice(2), msg, false, display.getVoice.bind(null, args[1], args[2]));
             } else if (["fullart", "full-art", "info"].indexOf(command) > -1) {
                 cardSearchCommand(args, msg, false, display.fullCardLink);
+            } else if (["deckcode", "code"].indexOf(command) > -1) {
+                linkToDeckCode(msg, args[1]);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
             } else if (["discord", "do"].indexOf(command) > -1) {
@@ -257,7 +259,9 @@ function helpCommand(msg) {
         "Gets a link from usamin.love for a card's voice.\n" +
         "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
         "__!fullart__ _term 1 term2_...\n" +
-        "Links to the full card art and information for the card that matches the terms\n" + 
+        "Links to the full card art and information for the card that matches the terms\n" +
+        "__!deckcode__ _deck code_\n" +
+        "Get a deckbuilder link with the deck code\n" +
         "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n\n" +
         "__!clean__\n" +
@@ -269,6 +273,9 @@ function helpCommand(msg) {
     sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM gobu.`);
 }
 
+function linkToDeckCode(msg, code) {
+    sendMessage(msg.channel, `Deck for code ${code}: http://sv.bagoum.com/portal/${code}`)
+}
 
 function linkToReddit(msg) {
     sendMessage(msg.channel,

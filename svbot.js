@@ -117,7 +117,12 @@ bot.on("guildCreate", (guild) => {
 bot.on("guildMemberAdd", (member) => {
     mongo.getWelcomeToggle(member.guild.id, function (toggle) {
         if (toggle) {
-            sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
+            if (member.guild.id == "324802170031702017") {
+                sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the official Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
+
+            } else {
+                sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
+            }
         }
     });
 });

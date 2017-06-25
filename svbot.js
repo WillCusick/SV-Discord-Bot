@@ -100,7 +100,7 @@ bot.on('ready', () => {
         }
     });
     bot.user.setAvatar('icons/gobu.jpg');
-    bot.user.setGame("Shadowverse");
+    bot.user.setGame("discord.me/svbagoum");
 });
 bot.on("guildCreate", (guild) => {
     log.log("Joined " +  guild.name + " " + guild.id);
@@ -117,7 +117,7 @@ bot.on("guildCreate", (guild) => {
 bot.on("guildMemberAdd", (member) => {
     mongo.getWelcomeToggle(member.guild.id, function (toggle) {
         if (toggle) {
-            sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.user.username}!`);
+            sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
         }
     });
 });
@@ -288,7 +288,7 @@ function linkToReddit(msg) {
 
 function linkToDiscord(msg) {
     sendMessage(msg.channel,
-        `Shadowverse Discord:\n\t${DISC_INV}`);
+        `Bagoum Shadowverse Discord:\n\t${DISC_INV}`);
 }
 
 function linkToTwitch(msg) {

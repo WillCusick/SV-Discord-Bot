@@ -17,7 +17,7 @@ var prefix = "!";
 var messgQ = {};
 var botUserQ = {};
 const Q_SIZE = 50;
-const DISC_INV = "https://discord.gg/ZJxsfBm";
+const DISC_INV = "https://discord.gg/sVapbKW";
 
 
 bot.on("message", msg => {
@@ -57,6 +57,10 @@ bot.on("message", msg => {
                 linkToBattlefy(msg);
             } else if (["steam"].indexOf(command) > -1) {
                 linkToSteam(msg);
+            } else if (["bagoum"].indexOf(command) > -1) {
+                linkToBagoum(msg);
+            } else if (["tl", "tierlist"].indexOf(command) > -1) {
+                linkToTierlist(msg);
             } else if (memeDict.hasOwnProperty(command)) {
                 meme(memeDict[command], msg);
             } else if (["help", "man"].indexOf(command) > -1) {
@@ -303,6 +307,18 @@ function linkToSteam(msg) {
     sendMessage(msg.channel,
         "Shadowverse on Steam:\n\thttp://store.steampowered.com/app/453480/"
     );
+}
+
+function linkToBagoum(msg) {
+    sendMessage(msg.channel,
+        "Visit Bagoum for all your Shadowverse needs!\n\thttp://sv.bagoum.com"
+    );
+}
+
+function linkToTierlist(msg) {
+    sendMessage(msg.channel,
+        "ExG's tournament tier list:\n\thttp://teamexg.com/tierlist"
+    )
 }
 
 function meme(imgLink, msg) {

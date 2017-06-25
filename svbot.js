@@ -49,7 +49,7 @@ bot.on("message", msg => {
                 linkToDeckCode(msg, args[1]);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
-            } else if (["discord", "do"].indexOf(command) > -1) {
+            } else if (["discord", "support"].indexOf(command) > -1) {
                 linkToDiscord(msg);
             } else if (["stream", "streams", "twitch", "strim"].indexOf(command) > -1) {
                 linkToTwitch(msg);
@@ -265,19 +265,19 @@ function helpCommand(msg) {
         "\tAlternate image search: !alt, !altimg, !imgalt\n" +
         "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
         "__!voice__ _lang type term1 term2_...\n" +
-        "Gets a link from usamin.love for a card's voice.\n" +
+        "Gets a link from Bagoum for a card's voice.\n" +
         "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
         "__!fullart__ _term 1 term2_...\n" +
         "Links to the full card art and information for the card that matches the terms\n" +
         "__!deckcode__ _deck code_\n" +
         "Get a deckbuilder link with the deck code\n" +
-        "__!reddit__, __!discord__, __!twitch__, __!tourneys__\n" +
+        "__!reddit__, __!bagoum__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n\n" +
         "__!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot. Requires mod permissions.\n` +
         "__!welcome__\n" +
         `Toggles the welcome message. Add TRUE/FALSE to explicitly toggle. Requires mod permissions.\n` +
-        "\nPlease report any issues to ElDynamite#4773"
+        `\nPlease report any issues to ElDynamite#4773 on the Bagoum server: ${DISC_INV}`
     );
     sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM gobu.`);
 }
@@ -293,7 +293,7 @@ function linkToReddit(msg) {
 
 function linkToDiscord(msg) {
     sendMessage(msg.channel,
-        `Bagoum Shadowverse Discord:\n\t${DISC_INV}`);
+        `Interested in the bot or our Shadowverse resources? Come hang with us over at the Shadowverse Bagoum Discord!\n\t${DISC_INV}`);
 }
 
 function linkToTwitch(msg) {
@@ -316,7 +316,8 @@ function linkToSteam(msg) {
 
 function linkToBagoum(msg) {
     sendMessage(msg.channel,
-        "Visit Bagoum for all your Shadowverse needs!\n\thttp://sv.bagoum.com"
+        "Visit Bagoum for all your Shadowverse needs!\n\thttp://sv.bagoum.com\n" +
+            `Or come visit us at our Discord server!\n\t${DISC_INV}`
     );
 }
 

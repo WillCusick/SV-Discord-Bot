@@ -49,7 +49,7 @@ bot.on("message", msg => {
                 linkToDeckCode(msg, args[1]);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
-            } else if (["discord", "support"].indexOf(command) > -1) {
+            } else if (["discord"].indexOf(command) > -1) {
                 linkToDiscord(msg);
             } else if (["stream", "streams", "twitch", "strim"].indexOf(command) > -1) {
                 linkToTwitch(msg);

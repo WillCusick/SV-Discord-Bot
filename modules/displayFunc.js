@@ -53,12 +53,12 @@ function displayCombatInfo(cardName) {
     formattedText = `${card.manaCost}pp ` + card.rarity + " " + card.faction + " " + (card.type || "") + "\n\t" + card.expansion;
     fields.push({
         name: "**Base**: 　 　" + ((card.type == "Follower") ? ` ${card.baseData.attack}/${card.baseData.defense}` : ""),
-        value: ((card.baseData.description) ? `*${card.baseData.description.trim(" ")}*` : "")
+        value: ((card.baseData.description) ? `*${card.baseData.description.trim(" ")}*` : "_　_")
     });
     if (card.hasEvo) {
         fields.push({
             name: "\n**Evolved**:　" + ((card.type == "Follower") ? ` ${card.evoData.attack}/${card.evoData.defense}` : ""),
-            value: ((card.evoData.description) ? `*${card.evoData.description.trim(" ")}*\n` : "")
+            value: ((card.evoData.description) ? `*${card.evoData.description.trim(" ")}*\n` : "_　_")
         });
     }
     return {

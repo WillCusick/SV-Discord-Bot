@@ -18,7 +18,7 @@ var messgQ = {};
 var botUserQ = {};
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/sVapbKW";
-
+const colors = {blue:"33023", green:"3997500", red:"16727100"};
 
 bot.on("message", msg => {
     if (msg.content.startsWith(prefix) &&
@@ -65,7 +65,7 @@ bot.on("message", msg => {
                 meme(memeDict[command], msg);
             } else if (["help", "man"].indexOf(command) > -1) {
                 helpCommand(msg);
-            } else if (msg.member && msg.member.permissions.hasPermission("MANAGE_MESSAGES")) {
+            } else if (msg.member && msg.member.permissions.has("MANAGE_MESSAGES")) {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
                 } else if (["welcome"].indexOf(command) > -1) {
@@ -134,16 +134,40 @@ bot.on("disconnect", () => {
 
 //MESSAGE HANDLING
 
-function sendMessage(channel, message, overridePermCheck=false) {
+function sendMessage(channel, message, overridePermCheck=false, color="green") {
     if (channel instanceof Discord.TextChannel) {
         let gid = channel.guild.id;
         if (!overridePermCheck &&
-            (!botUserQ.hasOwnProperty(gid) || !channel.permissionsFor(botUserQ[gid]).hasPermissions(["SEND_MESSAGES"]))) {
+            (!botUserQ.hasOwnProperty(gid) || !channel.permissionsFor(botUserQ[gid]).has(["SEND_MESSAGES"]))) {
             log.log(`Could not send message. Guild: ${channel.guild.name} Channel: ${channel.name}`);
             return;
         }
     }
-    channel.sendMessage(message)
+    channel.send(options={embed:{description:message, color:colors[color]}})
+        .then(message => {
+            addMessageToQueue(channel, message);
+        })
+        .catch(console.log);
+}
+function sendEmbed(channel, embed, overridePermCheck=false, color="", footer=true) {
+    if (channel instanceof Discord.TextChannel) {
+        let gid = channel.guild.id;
+        if (!overridePermCheck &&
+            (!botUserQ.hasOwnProperty(gid) || !channel.permissionsFor(botUserQ[gid]).has(["SEND_MESSAGES"]))) {
+            log.log(`Could not send embed. Guild: ${channel.guild.name} Channel: ${channel.name}`);
+            return;
+        }
+    }
+    if (color) {
+        embed.color = colors[color];
+    }
+    if (footer) {
+        embed.footer = {
+            icon_url: "http://sv.bagoum.com/logo_white.png",
+            text: "Bot by Bagoum: sv.bagoum.com"
+        }
+    }
+    channel.send(options={embed:embed})
         .then(message => {
             addMessageToQueue(channel, message);
         })
@@ -184,7 +208,7 @@ function cleanChannel(msg, channel) {
 
 function showToggled(msg, success, isToggle) {
     if (!success) {
-        sendMessage(msg.channel, "Couldn't set welcome toggle gobu!");
+        sendMessage(msg.channel, "Couldn't set welcome toggle gobu!", undefined, "red");
     } else {
         if (isToggle) {
             sendMessage(msg.channel, "Set welcome toggle to ON gobu.");
@@ -225,7 +249,8 @@ function cardSearchCommand(args, msg, isEvo, displayFunc = display.displayCombat
 
 function outputCards(msg, cardNames, isEvo, displayFunc) {
     if (cardNames.length == 1) {
-        sendMessage(msg.channel, displayFunc(cardNames[0], isEvo));
+        sendEmbed(msg.channel, displayFunc(cardNames[0], isEvo), undefined, "green");
+        //TODO
     } else if (cardNames.length > 1 && cardNames.length <= 32) {
         sendMessage(
             msg.channel,

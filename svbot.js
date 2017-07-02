@@ -353,8 +353,8 @@ function linkToTierlist(msg) {
 }
 
 function meme(imgLink, msg) {
-    sendMessage(msg.channel,
-        "http://www.bagoum.com/images/memes/" + imgLink);
+    sendEmbed(msg.channel,
+        {image:{url:"http://www.bagoum.com/images/memes/" + imgLink}});
 }
 
 //INIT

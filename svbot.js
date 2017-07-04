@@ -65,6 +65,8 @@ bot.on("message", msg => {
                 meme(memeDict[command], msg);
             } else if (["help", "man"].indexOf(command) > -1) {
                 helpCommand(msg);
+            } else if (["portal", "convert"].indexOf(command) > -1) {
+                convertPortal(msg, args, true);
             } else if (msg.member && msg.member.permissions.has("MANAGE_MESSAGES")) {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
@@ -79,6 +81,8 @@ bot.on("message", msg => {
         } catch (err) {
             log.log(`Couldn't process ${msg.content} on ${(msg.guild) ? msg.guild.name : "PM"} by ${msg.author.name}`);
         }
+    } else if (msg.content.includes("shadowverse-portal") && !msg.author.bot) {
+        convertPortal(msg);
     }
 });
 
@@ -272,6 +276,35 @@ function outputCards(msg, cardNames, isEvo, displayFunc) {
     }
 }
 
+function convertPortal(msg, args=[], forceResponse=false) {
+    let content = msg.content;
+    if (args.length > 0) {
+        content = args[1];
+    }
+    var execPortal = /(shadowverse\-portal\.com\/deck\/.+)/.exec(content);
+    if (execPortal) {
+        request.post({
+            url: "http://sv.bagoum.com/hashify",
+            form: {link:execPortal[1]}
+        }, function(err, res, body) {
+            if (!err && res.statusCode == 200) {
+                if (body) {
+                    sendEmbed(msg.channel, {fields:[{
+                        name:"Shadowverse-Portal link detected!",
+                        value:"Consider using the Bagoum deckbuilder instead. [Here's your deck](http://sv.bagoum.com/deckbuilder" + body + ")."
+                    }]}, null, "blue", false);
+                } else if (forceResponse) {
+                    sendMessage(msg.channel, `The URL "${content}" could not be read.`, null, "red");
+                }
+            } else {
+                console.log("Failed to convert", execPortal[1]);
+            }
+        });
+    } else if (forceResponse) {
+        sendMessage(msg.channel, `The URL "${content}" could not be read.`, null, "red")
+    }
+}
+
 //LINK COMMANDS
 
 function helpCommand(msg) {
@@ -296,6 +329,8 @@ function helpCommand(msg) {
         "Links to the full card art and information for the card that matches the terms\n" +
         "__!deckcode__ _deck code_\n" +
         "Get a deckbuilder link with the deck code\n" +
+        "__!portal__ _sv-portal link_\n" +
+        "Converts a Shadowverse-Portal deck link\n" +
         "__!reddit__, __!bagoum__, __!discord__, __!twitch__, __!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n\n" +
         "__!clean__\n" +

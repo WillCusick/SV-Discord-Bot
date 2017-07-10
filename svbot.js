@@ -16,6 +16,7 @@ var blacklist = process.env.DISC_BLACKLIST.split(";");
 var prefix = "!";
 var messgQ = {};
 var botUserQ = {};
+var bypassID = process.env.DISC_BYPASSMOD.split(";");
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/sVapbKW";
 const colors = {blue:"33023", green:"3997500", red:"16727100"};
@@ -67,7 +68,7 @@ bot.on("message", msg => {
                 helpCommand(msg);
             } else if (["portal", "convert"].indexOf(command) > -1) {
                 convertPortal(msg, args, true);
-            } else if (msg.member && msg.member.permissions.has("MANAGE_MESSAGES")) {
+            } else if (isModEquiv(msg.member)) {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
                 } else if (["welcome"].indexOf(command) > -1) {
@@ -85,6 +86,10 @@ bot.on("message", msg => {
         convertPortal(msg);
     }
 });
+
+function isModEquiv(member) {
+    return member && (bypassID.indexOf(member.id) > -1 || member.permissions.has("MANAGE_MESSAGES"));
+}
 
 var memeDict = {
     "sparta":"sv/sparta.jpg"

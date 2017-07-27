@@ -17,17 +17,38 @@ var prefix = "!";
 var messgQ = {};
 var botUserQ = {};
 var bypassID = process.env.DISC_BYPASSMOD.split(";");
+var adminGuids = ["324802170031702017"]; //guilds where gobu serves special admin uses
+var prebannedUsers = process.env.DISC_USERBLACKLIST.split(";");
+//this only is applied to the admin guilds
+
 const Q_SIZE = 50;
 const DISC_INV = "https://discord.gg/sVapbKW";
 const colors = {blue:"33023", green:"3997500", red:"16727100"};
 
+function msgSpamCheck(msg) {
+    return Array.from(msg.mentions.users).length > 3;
+}
+
+function spamAlert(msg) {
+    sendMessage(msg.guild.defaultChannel, `${msg.member.toString()} is possibly spamming.`);
+}
+
 bot.on("message", msg => {
-    if (msg.content.startsWith(prefix) &&
+    if (msgSpamCheck(msg)) {
+        spamAlert(msg);
+    }
+    else if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
             let args = msg.content.substring(1).split(" ");
             let command = args[0].toLowerCase();
             log.logCommand(msg);
+
+            if (command == "destroy" && isSuperMod(msg.member)) {
+                console.log("Logging out.");
+                bot.destroy();
+            }
+
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {
@@ -90,6 +111,9 @@ bot.on("message", msg => {
 function isModEquiv(member) {
     return member && (bypassID.indexOf(member.id) > -1 || member.permissions.has("MANAGE_MESSAGES"));
 }
+function isSuperMod(member) {
+    return (bypassID.indexOf(member.id) > -1);
+}
 
 var memeDict = {
     "sparta":"sv/sparta.jpg"
@@ -124,16 +148,21 @@ bot.on("guildCreate", (guild) => {
     }
 });
 bot.on("guildMemberAdd", (member) => {
-    mongo.getWelcomeToggle(member.guild.id, function (toggle) {
-        if (toggle) {
-            if (member.guild.id == "324802170031702017") {
-                sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the official Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
+    if (adminGuids.indexOf(member.guild.id) > -1 && prebannedUsers.indexOf(member.id) > -1) {
+        member.ban();
+        log.log("Prebanned " + member.user.username + "(" + member.id + ") from " + member.guild.name);
+    } else {
+        mongo.getWelcomeToggle(member.guild.id, function (toggle) {
+            if (toggle) {
+                if (adminGuids.indexOf(member.guild.id) > -1) {
+                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the official Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
 
-            } else {
-                sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
+                } else {
+                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
+                }
             }
-        }
-    });
+        });
+    }
 });
 
 bot.on("disconnect", () => {

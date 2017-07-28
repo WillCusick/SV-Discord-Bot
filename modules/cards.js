@@ -32,6 +32,7 @@ function buildCardData(callback) {
         }
         var cards = JSON.parse(body.replace(/\<br\>/g, "\\n"));
         formatCardData(cards);
+        module.exports.cardsList = Object.keys(module.exports.cardData);
         return callback(null);
     });
 }

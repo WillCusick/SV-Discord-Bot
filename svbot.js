@@ -16,7 +16,7 @@ var blacklist = process.env.DISC_BLACKLIST.split(";");
 var prefix = "!";
 var messgQ = {};
 var botUserQ = {};
-var bypassID = process.env.DISC_BYPASSMOD.split(";");
+var bypassID = process.env.DISC_BYPASSMOD.split(";"); //this gives supermod perms
 var adminGuids = ["324802170031702017"]; //guilds where gobu serves special admin uses
 var prebannedUsers = process.env.DISC_USERBLACKLIST.split(";");
 //this only is applied to the admin guilds
@@ -48,10 +48,12 @@ bot.on("message", msg => {
             if (command == "destroy" && isSuperMod(msg.member)) {
                 console.log("Logging out.");
                 bot.destroy();
-            }
+            } else
 
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
+            } else if (["randomcard"].indexOf(command) > -1) {
+                randomCard(msg);
             } else if (["card-search", "card", "search"].indexOf(command) > -1) {
                 cardSearchCommand(args, msg, false);
             } else if (["flair"].indexOf(command) > -1) {
@@ -261,7 +263,7 @@ function showToggled(msg, success, isToggle) {
 
 function cardNameCommand(args, msg, isEvo) {
     let subname = args.slice(1).join(" ").toLowerCase();
-    let cardNames = Object.keys(cards.cardData).filter(function (name) {
+    let cardNames = cards.cardsList.filter(function (name) {
         return name.includes(subname);
     });
     outputCards(msg, cardNames, isEvo, display.displayCombatInfo);
@@ -269,7 +271,7 @@ function cardNameCommand(args, msg, isEvo) {
 
 
 function cardSearchCommand(args, msg, isEvo, displayFunc = display.displayCombatInfo) {
-    let cardNames = Object.keys(cards.cardData); //card names are stored as lower
+    let cardNames = cards.cardsList; //card names are stored as lower
     givenSearch = args.slice(1).join(" ").toLowerCase();
     for (var ci = 0; ci < cardNames.length; ci++) {
         if (cardNames[ci] == givenSearch) {
@@ -285,6 +287,9 @@ function cardSearchCommand(args, msg, isEvo, displayFunc = display.displayCombat
     outputCards(msg, cardNames, isEvo, displayFunc);
 }
 
+function randomCard(msg) {
+    outputCards(msg, [cards.cardsList[cards.cardsList.length * Math.random() << 0]], false, display.displayCombatInfo);
+}
 
 function outputCards(msg, cardNames, isEvo, displayFunc) {
     if (cardNames.length == 1) {
@@ -350,6 +355,8 @@ function helpCommand(msg) {
         "__!card__ _term1 term2_...\n" +
         "Finds card(s) that match the given terms\n" +
         "\tAlternate forms: !search, !card-search, !\n" +
+            "__!randomcard__\n" +
+            "Gets a random card\n" +
         "__!flair__ _term1 term2_...\n" +
         "Shows card flair text for the card that matches the terms\n" +
         "__!img__ _term1 term2_...\n" +

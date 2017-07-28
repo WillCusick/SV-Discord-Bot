@@ -26,8 +26,8 @@ const DISC_INV = "https://discord.gg/sVapbKW";
 const colors = {blue:"33023", green:"3997500", red:"16727100"};
 
 function msgSpamCheck(msg) {
-    return Array.from(msg.mentions.users).length > 3 ||
-        (msg.guild.id == "302976037929746442" && msg.member.id == "263929551632072706");
+    return Array.from(msg.mentions.users).length > 3 || (false &&
+        (msg.guild.id == "302976037929746442" && msg.member.id == "263929551632072706"));
 }
 
 function spamAlert(msg) {

@@ -119,7 +119,9 @@ function isSuperMod(member) {
 }
 
 var memeDict = {
-    "sparta":"sv/sparta.jpg"
+    "sparta":"sv/sparta.jpg",
+    "ouroboroost":"sv/ouroboroost.png",
+    "thishead":"sv/thishead.png"
 };
 
 bot.on('ready', () => {

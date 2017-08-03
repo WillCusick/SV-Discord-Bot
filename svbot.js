@@ -45,9 +45,6 @@ bot.on("message", msg => {
             let command = args[0].toLowerCase();
             log.logCommand(msg);
 
-            if (command == "destroy" && isSuperMod(msg.member)) {
-            } else
-
             if (["card-name", "name"].indexOf(command) > -1) {
                 cardNameCommand(args, msg, false);
             } else if (["randomcard"].indexOf(command) > -1) {
@@ -96,6 +93,8 @@ bot.on("message", msg => {
                 } else if (["destroy"].indexOf(command) > -1) {
                     console.log("Logging out.");
                     bot.destroy();
+                } else {
+                    cardSearchCommand(["card-search"].concat(args), msg);
                 }
             } else if (isModEquiv(msg.member)) {
                 if (command == "clean") {

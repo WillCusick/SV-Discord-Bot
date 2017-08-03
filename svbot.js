@@ -46,8 +46,6 @@ bot.on("message", msg => {
             log.logCommand(msg);
 
             if (command == "destroy" && isSuperMod(msg.member)) {
-                console.log("Logging out.");
-                bot.destroy();
             } else
 
             if (["card-name", "name"].indexOf(command) > -1) {
@@ -92,6 +90,13 @@ bot.on("message", msg => {
                 helpCommand(msg);
             } else if (["portal", "convert"].indexOf(command) > -1) {
                 convertPortal(msg, args, true);
+            } else if (isSuperMod(msg.member)) {
+                if (["stahp"].indexOf(command) > -1) {
+                    updateUsername(msg, args);
+                } else if (["destroy"].indexOf(command) > -1) {
+                    console.log("Logging out.");
+                    bot.destroy();
+                }
             } else if (isModEquiv(msg.member)) {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
@@ -100,7 +105,7 @@ bot.on("message", msg => {
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
                 }
-            } else {
+            }else {
                 cardSearchCommand(["card-search"].concat(args), msg);
             }
         } catch (err) {
@@ -124,10 +129,15 @@ var memeDict = {
     "thishead":"sv/thishead.png"
 };
 
+function updateUsername(msg, args) {
+    botUserQ[msg.guild.id].setNickname(args.slice(1).join(" ") || "SV.BagoumBot");
+}
+
 bot.on('ready', () => {
     log.log(`Logged on to ${bot.guilds.map(x => {
         x.fetchMember(bot.user).then(botmember => {
             botUserQ[x.id] = botmember;
+            botmember.setNickname("SV.BagoumBot");
         });
         return x.name;
     })}`);

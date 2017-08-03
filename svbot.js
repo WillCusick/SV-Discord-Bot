@@ -136,7 +136,7 @@ bot.on('ready', () => {
     log.log(`Logged on to ${bot.guilds.map(x => {
         x.fetchMember(bot.user).then(botmember => {
             botUserQ[x.id] = botmember;
-            botmember.setNickname("SV.BagoumBot");
+            //botmember.setNickname("SV.BagoumBot");
         });
         return x.name;
     })}`);

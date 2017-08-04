@@ -19,6 +19,7 @@ var botUserQ = {};
 var bypassID = process.env.DISC_BYPASSMOD.split(";"); //this gives supermod perms
 var adminGuids = ["324802170031702017"]; //guilds where gobu serves special admin uses
 var prebannedUsers = process.env.DISC_USERBLACKLIST.split(";");
+var shutdown = false;
 //this only is applied to the admin guilds
 
 const Q_SIZE = 50;
@@ -92,6 +93,7 @@ bot.on("message", msg => {
                     updateUsername(msg, args);
                 } else if (["destroy"].indexOf(command) > -1) {
                     console.log("Logging out.");
+                    shutdown = true;
                     bot.destroy();
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
@@ -180,8 +182,10 @@ bot.on("guildMemberAdd", (member) => {
 });
 
 bot.on("disconnect", () => {
-    log.log("Bot disconnected!");
-    bot.login(loginToken);
+    log.log("Bot disconnected! Shutdown is set to " + shutdown);
+    if (!shutdown) {
+        bot.login(loginToken);
+    }
 });
 
 //MESSAGE HANDLING

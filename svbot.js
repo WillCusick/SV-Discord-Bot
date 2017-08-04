@@ -390,7 +390,7 @@ function helpCommand(msg) {
         `Deletes the last ${Q_SIZE} messages by this bot. Requires mod permissions.\n` +
         "__!welcome__\n" +
         `Toggles the welcome message. Add TRUE/FALSE to explicitly toggle. Requires mod permissions.\n` +
-        `\nPlease report any issues to ElDynamite#4773 on the Bagoum server: ${DISC_INV}`
+        `\nPlease report any issues to ElDynamite#4773 on the Bagoum server: ${DISC_INV}\nAdd this bot to your server here: https://discordapp.com/oauth2/authorize?client_id=258408993880276993&scope=bot`
     );
     sendMessage(msg.channel, `${msg.author.username}, I've sent you a list of commands via PM gobu.`);
 }

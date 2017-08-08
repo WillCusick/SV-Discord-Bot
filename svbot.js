@@ -149,7 +149,7 @@ bot.on('ready', () => {
         }
     });
     bot.user.setAvatar('icons/gobu.jpg');
-    bot.user.setGame("discord.me/svbagoum");
+    bot.user.setGame("@BagoumOfficial");
 });
 bot.on("guildCreate", (guild) => {
     log.log("Joined " +  guild.name + " " + guild.id);
@@ -336,7 +336,7 @@ function convertPortal(msg, args=[], forceResponse=false) {
     if (args.length > 0) {
         content = args[1];
     }
-    var execPortal = /(shadowverse\-portal\.com\/deck\/.+)/.exec(content);
+    var execPortal = /(shadowverse\-portal\.com\/deck\/.+)/.exec(content) || /(shadowverse\-portal\.com\/deckbuilder\/create\/.+)/.exec(content);
     if (execPortal) {
         request.post({
             url: "http://sv.bagoum.com/hashify",

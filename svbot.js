@@ -171,7 +171,7 @@ bot.on("guildMemberAdd", (member) => {
         mongo.getWelcomeToggle(member.guild.id, function (toggle) {
             if (toggle) {
                 if (adminGuids.indexOf(member.guild.id) > -1) {
-                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the official Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
+                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the unofficial Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
 
                 } else {
                     sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);

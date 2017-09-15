@@ -17,18 +17,18 @@ var prefix = "!";
 var messgQ = {};
 var botUserQ = {};
 var bypassID = process.env.DISC_BYPASSMOD.split(";"); //this gives supermod perms
-var adminGuids = ["324802170031702017"]; //guilds where gobu serves special admin uses
+var adminGuids = ["358013891281813505"]; //guilds where gobu serves special admin uses
 var prebannedUsers = process.env.DISC_USERBLACKLIST.split(";");
 var shutdown = false;
 //this only is applied to the admin guilds
 
 const Q_SIZE = 50;
-const DISC_INV = "https://discord.gg/sVapbKW";
+const DISC_INV = "https://discord.gg/kCdmuvf";
 const colors = {blue:"33023", green:"3997500", red:"16727100"};
 
 function msgSpamCheck(msg) {
     return Array.from(msg.mentions.users).length > 3 || (false &&
-        (msg.guild.id == "302976037929746442" && msg.member.id == "263929551632072706"));
+        (msg.guild.id == "302976037929746442" && msg.member.id == "263929551632072706")); //szerro memes
 }
 
 function spamAlert(msg) {

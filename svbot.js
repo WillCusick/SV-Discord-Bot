@@ -23,7 +23,7 @@ var shutdown = false;
 //this only is applied to the admin guilds
 
 const Q_SIZE = 50;
-const DISC_INV = "https://discord.gg/kCdmuvf";
+const DISC_INV = "https://discord.gg/9GfkagF";
 const colors = {blue:"33023", green:"3997500", red:"16727100"};
 
 function msgSpamCheck(msg) {
@@ -32,7 +32,11 @@ function msgSpamCheck(msg) {
 }
 
 function spamAlert(msg) {
-    sendMessage(msg.guild.defaultChannel, `${msg.member.toString()} is possibly spamming.`);
+    sendMessage(defaultChannel(msg.guild), `${msg.member.toString()} is possibly spamming.`);
+}
+
+function defaultChannel(guild) {
+    return guild.defaultChannel || guild.channels.get("358013891948576778");
 }
 
 bot.on("message", msg => {
@@ -164,7 +168,7 @@ bot.on("guildCreate", (guild) => {
         guild.fetchMember(bot.user).then(botmember => {
             botUserQ[guild.id] = botmember;
         });
-        sendMessage(guild.defaultChannel, "Shadowverse Bot has successfully joined the server gobu!", true);
+        sendMessage(defaultChannel(guild), "Shadowverse Bot has successfully joined the server gobu!", true);
     }
 });
 bot.on("guildMemberAdd", (member) => {
@@ -175,10 +179,10 @@ bot.on("guildMemberAdd", (member) => {
         mongo.getWelcomeToggle(member.guild.id, function (toggle) {
             if (toggle) {
                 if (adminGuids.indexOf(member.guild.id) > -1) {
-                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!\nThis is the unofficial Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
+                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()}!\nThis is the Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
 
                 } else {
-                    sendMessage(member.guild.defaultChannel, `Welcome gobu, ${member.toString()}!`);
+                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()}!`);
                 }
             }
         });
@@ -195,6 +199,7 @@ bot.on("disconnect", () => {
 //MESSAGE HANDLING
 
 function sendMessage(channel, message, overridePermCheck=false, color="green") {
+    if (!channel) { return; }
     if (channel instanceof Discord.TextChannel) {
         let gid = channel.guild.id;
         if (!overridePermCheck &&
@@ -210,6 +215,7 @@ function sendMessage(channel, message, overridePermCheck=false, color="green") {
         .catch(console.log);
 }
 function sendEmbed(channel, embed, overridePermCheck=false, color="", footer=true) {
+    if (!channel) { return; }
     if (channel instanceof Discord.TextChannel) {
         let gid = channel.guild.id;
         if (!overridePermCheck &&

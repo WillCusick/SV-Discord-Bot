@@ -95,6 +95,10 @@ bot.on("message", msg => {
                     console.log("Logging out.");
                     shutdown = true;
                     bot.destroy();
+                } else if (command == "clean") {
+                    cleanChannel(msg, msg.channel);
+                } else if (["welcome"].indexOf(command) > -1) {
+                    mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
                 }
@@ -106,7 +110,7 @@ bot.on("message", msg => {
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
                 }
-            }else {
+            } else {
                 cardSearchCommand(["card-search"].concat(args), msg);
             }
         } catch (err) {

@@ -32,7 +32,7 @@ function msgSpamCheck(msg) {
 }
 
 function spamAlert(msg) {
-    sendMessage(defaultChannel(msg.guild), `${msg.member.toString()} is possibly spamming.`);
+    sendMessage(defaultChannel(msg.guild), `${msg.member.toString()} (${member.user.username}) is possibly spamming.`);
 }
 
 function defaultChannel(guild) {
@@ -179,10 +179,10 @@ bot.on("guildMemberAdd", (member) => {
         mongo.getWelcomeToggle(member.guild.id, function (toggle) {
             if (toggle) {
                 if (adminGuids.indexOf(member.guild.id) > -1) {
-                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()}!\nThis is the Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
+                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()} (${member.user.username})!\nThis is the Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
 
                 } else {
-                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()}!`);
+                    sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()} (${member.user.username})!`);
                 }
             }
         });

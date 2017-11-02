@@ -74,6 +74,8 @@ bot.on("message", msg => {
                 linkToDeckCode(msg, args[1]);
             } else if (["reddit", "subreddit"].indexOf(command) > -1) {
                 linkToReddit(msg);
+            } else if (["twitter"].indexOf(command) > -1) {
+                linkToTwitter(msg);
             } else if (["discord"].indexOf(command) > -1) {
                 linkToDiscord(msg);
             } else if (["stream", "streams", "twitch", "strim"].indexOf(command) > -1) {
@@ -416,6 +418,11 @@ function linkToDeckCode(msg, code) {
 function linkToReddit(msg) {
     sendMessage(msg.channel,
         "Shadowverse Subreddit:\n\thttps://www.reddit.com/r/shadowverse/");
+}
+
+function linkToTwitter(msg) {
+    sendMessage(msg.channel,
+        "Bagoum Twitter: @BagoumOfficial\n\thttps://twitter.com/BagoumOfficial");
 }
 
 function linkToDiscord(msg) {

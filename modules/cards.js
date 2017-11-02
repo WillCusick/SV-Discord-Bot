@@ -18,6 +18,16 @@ function formatCardData(cards) {
         if (cards.hasOwnProperty(cardName)) {
             card = cards[cardName];
             cardData[cardName.toLowerCase()] = card;
+            card.baseData.img = `https://shadowverse-portal.com/image/card/en/C_${card.id}.png`;
+            if (card.hasAlt) {
+                card.baseData.altimg = `https://shadowverse-portal.com/image/card/en/C_${card.altid}.png`;
+            }
+            if (card.hasEvo) {
+                card.evoData.img = `https://shadowverse-portal.com/image/card/en/E_${card.id}.png`;
+                if (card.hasAlt) {
+                    card.evoData.altimg = `https://shadowverse-portal.com/image/card/en/E_${card.altid}.png`;
+                }
+            }
         }
     }
 }

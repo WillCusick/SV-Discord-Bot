@@ -5,7 +5,18 @@ var mongoose = require('mongoose');
 
 module.exports = {};
 
-var wTogDB = mongoose.createConnection(`mongodb://${process.env.MONGO_LOGIN}:${process.env.MONGO_PW}@${process.env.MONGO_IP}:27017/welcometoggle?authSource=admin`);
+function createConnection(db) {
+    return mongoose.createConnection(
+        `mongodb://${process.env.MONGO_IP}:27017/${db}`, {
+            useMongoClient: true,
+            authSource: "admin",
+            user: process.env.MONGO_USER,
+            pass: process.env.MONGO_PW
+        }
+    )
+}
+
+var wTogDB = createConnection("welcometoggle");
 wTogDB.on('error', console.error.bind(console, 'connection error:'));
 wTogDB.once('open', function () {
     console.log("Welcome Toggle DB connected.");

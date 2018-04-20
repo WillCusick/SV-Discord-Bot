@@ -4,7 +4,7 @@ This is a fork of the Shadowverse Discord's bot. It just replace the `!` prefix 
 
 ### Adding this bot
 
-You can add this bot to your server by [using this link](https://discordapp.com/oauth2/authorize?client_id=258408993880276993&scope=bot). The bot requires no special permissions.
+You can add this bot to your server by [using this link](https://discordapp.com/oauth2/authorize?client_id=436832310273245184&scope=bot). The bot requires no special permissions.
 
 ### Using this bot
 

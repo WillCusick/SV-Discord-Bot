@@ -6,14 +6,14 @@ var fs = require("fs");
 var request = require("request");
 var cards = require('./modules/cards');
 var display = require('./modules/displayFunc');
-var mongo = require('./modules/mongo');
+//var mongo = require('./modules/mongo');
 var log = require('./modules/logging');
 
 var bot = new Discord.Client();
 
 var loginToken = process.env.SV_DISCORD_TOKEN;
 var blacklist = process.env.DISC_BLACKLIST.split(";");
-var prefix = "!";
+var prefix = "v!";
 var messgQ = {};
 var botUserQ = {};
 var bypassID = process.env.DISC_BYPASSMOD.split(";"); //this gives supermod perms
@@ -46,7 +46,7 @@ bot.on("message", msg => {
     else if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
-            let args = msg.content.substring(1).split(" ");
+            let args = msg.content.substring(prefix.length).split(" ");
             let command = args[0].toLowerCase();
             log.logCommand(msg);
 
@@ -104,7 +104,7 @@ bot.on("message", msg => {
                 } else if (command == "clean") {
                     cleanChannel(msg, msg.channel);
                 } else if (["welcome"].indexOf(command) > -1) {
-                    mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
+                    //mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
                 }
@@ -112,7 +112,7 @@ bot.on("message", msg => {
                 if (command == "clean") {
                     cleanChannel(msg, msg.channel);
                 } else if (["welcome"].indexOf(command) > -1) {
-                    mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
+                    //mongo.welcomeToggle(msg.guild.id, args, showToggled.bind(null, msg));
                 } else {
                     cardSearchCommand(["card-search"].concat(args), msg);
                 }
@@ -178,7 +178,7 @@ bot.on("guildMemberAdd", (member) => {
         member.ban();
         log.log("Prebanned " + member.user.username + "(" + member.id + ") from " + member.guild.name);
     } else {
-        mongo.getWelcomeToggle(member.guild.id, function (toggle) {
+        /*mongo.getWelcomeToggle(member.guild.id, function (toggle) {
             if (toggle) {
                 if (adminGuids.indexOf(member.guild.id) > -1) {
                     sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()} (${member.user.username})!\nThis is the Discord server for sv.bagoum.com. If you'd like to inquire about the website, contact ElDynamite. Otherwise, enjoy your stay!`);
@@ -187,7 +187,7 @@ bot.on("guildMemberAdd", (member) => {
                     sendMessage(defaultChannel(member.guild), `Welcome gobu, ${member.toString()} (${member.user.username})!`);
                 }
             }
-        });
+        });*/
     }
 });
 
@@ -376,35 +376,35 @@ function convertPortal(msg, args=[], forceResponse=false) {
 
 function helpCommand(msg) {
     msg.author.sendMessage(
-        "__!name__ _name_\n" +
+        "__v!name__ _name_\n" +
         "Finds card(s) with the given name\n" +
-        "\tAlternate forms: !card-name\n" +
-        "__!card__ _term1 term2_...\n" +
+        "\tAlternate forms: v!card-name\n" +
+        "__v!card__ _term1 term2_...\n" +
         "Finds card(s) that match the given terms\n" +
-        "\tAlternate forms: !search, !card-search, !\n" +
-            "__!randomcard__\n" +
+        "\tAlternate forms: v!search, v!card-search, v!\n" +
+            "__v!randomcard__\n" +
             "Gets a random card\n" +
-        "__!flair__ _term1 term2_...\n" +
+        "__v!flair__ _term1 term2_...\n" +
         "Shows card flair text for the card that matches the terms\n" +
-        "__!img__ _term1 term2_...\n" +
+        "__v!img__ _term1 term2_...\n" +
         "Shows the card image for the card that matches the terms\n" +
-        "\tEvolved search: !evoimg, !imgevo, !evo\n" +
-        "\tAlternate image search: !alt, !altimg, !imgalt\n" +
-        "\tAlternate evolved image search: !evoalt, !altevo, !altevoimg\n" +
-        "__!voice__ _lang type term1 term2_...\n" +
+        "\tEvolved search: v!evoimg, v!imgevo, v!evo\n" +
+        "\tAlternate image search: v!alt, v!altimg, v!imgalt\n" +
+        "\tAlternate evolved image search: v!evoalt, v!altevo, v!altevoimg\n" +
+        "__v!voice__ _lang type term1 term2_...\n" +
         "Gets a link from Bagoum for a card's voice.\n" +
         "\tProvide E or J for language, and SUMMON, ATTACK, EVOLVE, DEATH, EFFECT, or ALL for type.\n" +
-        "__!fullart__ _term 1 term2_...\n" +
+        "__v!fullart__ _term 1 term2_...\n" +
         "Links to the full card art and information for the card that matches the terms\n" +
-        "__!deckcode__ _deck code_\n" +
+        "__v!deckcode__ _deck code_\n" +
         "Get a deckbuilder link with the deck code\n" +
-        "__!portal__ _sv-portal link_\n" +
+        "__v!portal__ _sv-portal link_\n" +
         "Converts a Shadowverse-Portal deck link\n" +
-        "__!reddit__, __!bagoum__, __!discord__, __!twitch__, __!tourneys__\n" +
+        "__v!reddit__, __v!bagoum__, __v!discord__, __v!twitch__, __v!tourneys__\n" +
         "Returns relevant links to other Shadowverse resources\n\n" +
-        "__!clean__\n" +
+        "__v!clean__\n" +
         `Deletes the last ${Q_SIZE} messages by this bot. Requires mod permissions.\n` +
-        "__!welcome__\n" +
+        "__v!welcome__\n" +
         `Toggles the welcome message. Add TRUE/FALSE to explicitly toggle. Requires mod permissions.\n` +
         `\nPlease report any issues to ElDynamite#4773 on the Bagoum server: ${DISC_INV}\nAdd this bot to your server here: https://discordapp.com/oauth2/authorize?client_id=258408993880276993&scope=bot`
     );

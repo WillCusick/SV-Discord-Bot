@@ -45,7 +45,7 @@ bot.on("message", msg => {
     /*if (msgSpamCheck(msg)) {
         spamAlert(msg);
     }
-    else*/ if (msg.content.startsWith(prefix) &&
+    else*/ if (msg.content.toLowerCase().startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
             let args = msg.content.substring(prefix.length).split(" ");

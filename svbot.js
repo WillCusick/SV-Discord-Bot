@@ -40,10 +40,12 @@ function defaultChannel(guild) {
 }
 
 bot.on("message", msg => {
-    if (msgSpamCheck(msg)) {
+    // spamAlert crashed the bot once. I don't need it for my small server,
+    // so let's get rid of it. I'd prefer not having to restart it
+    /*if (msgSpamCheck(msg)) {
         spamAlert(msg);
     }
-    else if (msg.content.startsWith(prefix) &&
+    else*/ if (msg.content.startsWith(prefix) &&
         msg.content.length > 1 && !msg.author.bot) {
         try {
             let args = msg.content.substring(prefix.length).split(" ");

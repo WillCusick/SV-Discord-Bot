@@ -1,6 +1,12 @@
 # Shadowverse Bot
 
-This is a fork of the Shadowverse Discord's bot. It just replace the `!` prefix with `v!` for command namespacing reasons.
+This is a fork of the Shadowverse Discord's bot.
+
+Changes:
+
+- The prefix is now `v!` instead of `!`
+- Removed the spam check feature. It was the cause of some crashes and was unneeded for my purposes.
+- Allow capital prefixes (since mobile auto-capitalizes the first letter). E.g., both `v!` and `V!` are acceptable prefixes
 
 ### Adding this bot
 
